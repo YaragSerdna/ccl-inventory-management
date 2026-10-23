@@ -1,1 +1,194 @@
-<p>dashboard works!</p>
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <a class="brand" routerLink="/dashboard">
+            <span class="brand-logo">CI</span>
+            <span>
+                <strong>CCL Inventory</strong>
+                <small>Gestión de inventario</small>
+            </span>
+        </a>
+
+        <p class="menu-label">MENÚ PRINCIPAL</p>
+
+        <nav class="navigation">
+            <a routerLink="/dashboard" routerLinkActive="active">
+                <span class="nav-icon">▦</span>
+                Dashboard
+            </a>
+
+            <a class="nav-placeholder" aria-disabled="true">
+                <span class="nav-icon">▤</span>
+                Productos
+                <small>Próximamente</small>
+            </a>
+
+            <a class="nav-placeholder" aria-disabled="true">
+                <span class="nav-icon">⇄</span>
+                Movimientos
+                <small>Próximamente</small>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="status-dot"></span>
+            Sistema conectado
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <p class="breadcrumb">Inicio / Dashboard</p>
+                <h1>Panel de inventario</h1>
+            </div>
+
+            <button class="logout-button" type="button" (click)="logout()">
+                Cerrar sesión
+            </button>
+        </header>
+
+        <section class="welcome-section">
+            <div>
+                <p class="eyebrow">RESUMEN GENERAL</p>
+                <h2>Controla tu inventario</h2>
+                <p>
+                    Consulta las existencias y el valor de tus productos en un solo lugar.
+                </p>
+            </div>
+
+            <button class="refresh-button" type="button" (click)="loadInventory()" [disabled]="loading">
+                ↻ Actualizar
+            </button>
+        </section>
+
+        <div class="error-banner" *ngIf="errorMessage" role="alert">
+            <span>{{ errorMessage }}</span>
+            <button type="button" (click)="loadInventory()">Reintentar</button>
+        </div>
+
+        <section class="metrics-grid" aria-label="Indicadores del inventario">
+            <article class="metric-card">
+                <div class="metric-heading">
+                    <span class="metric-icon blue">▤</span>
+                    <span class="metric-label">Productos activos</span>
+                </div>
+                <p class="metric-value">
+                    {{ loading ? '—' : (totalProducts | number) }}
+                </p>
+                <p class="metric-description">Referencias en el inventario</p>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-heading">
+                    <span class="metric-icon green">▥</span>
+                    <span class="metric-label">Unidades disponibles</span>
+                </div>
+                <p class="metric-value">
+                    {{ loading ? '—' : (totalUnits | number) }}
+                </p>
+                <p class="metric-description">Unidades en existencia</p>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-heading">
+                    <span class="metric-icon purple">$</span>
+                    <span class="metric-label">Valor del inventario</span>
+                </div>
+                <p class="metric-value currency">
+                    {{ loading ? '—' : (totalValue | currency:'COP':'symbol-narrow':'1.0-0') }}
+                </p>
+                <p class="metric-description">Valor estimado de las existencias</p>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-heading">
+                    <span class="metric-icon orange">!</span>
+                    <span class="metric-label">Stock bajo</span>
+                </div>
+                <p class="metric-value">
+                    {{ loading ? '—' : (lowStockProducts | number) }}
+                </p>
+                <p class="metric-description">Productos con 1 a 5 unidades</p>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-heading">
+                    <span class="metric-icon red">!</span>
+                    <span class="metric-label">Sin stock</span>
+                </div>
+                <p class="metric-value">
+                    {{ loading ? '—' : (outOfStockProducts | number) }}
+                </p>
+                <p class="metric-description">Productos sin existencias disponibles</p>
+            </article>
+        </section>
+
+        <section class="inventory-section">
+            <div class="section-header">
+                <div>
+                    <h2>Inventario actual</h2>
+                    <p>Existencias registradas en el sistema</p>
+                </div>
+
+                <span class="record-count" *ngIf="!loading">
+                    {{ inventory.length }} referencias
+                </span>
+            </div>
+
+            <div class="loading-state" *ngIf="loading">
+                Consultando inventario...
+            </div>
+
+            <div class="table-wrapper" *ngIf="!loading && !errorMessage">
+                <table *ngIf="inventory.length > 0; else emptyInventory">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Producto</th>
+                            <th class="numeric">Existencias</th>
+                            <th class="numeric">Precio unitario</th>
+                            <th class="numeric">Valor total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let item of inventory">
+                            <td>
+                                <span class="product-code">{{ item.code }}</span>
+                            </td>
+                            <td>
+                                <strong class="product-name">{{ item.name }}</strong>
+                            </td>
+                            <td class="numeric">
+                                <span class="stock-badge" [class.stock-low]="item.stock > 0 && item.stock <= 5"
+                                    [class.stock-empty]="item.stock === 0">
+                                    {{ item.stock }}
+                                </span>
+                            </td>
+                            <td class="numeric">
+                                {{ item.unitPrice | currency:'COP':'symbol-narrow':'1.0-0' }}
+                            </td>
+                            <td class="numeric value-cell">
+                                {{ item.inventoryValue | currency:'COP':'symbol-narrow':'1.0-0' }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <ng-template #emptyInventory>
+                    <div class="empty-state">
+                        <div class="empty-icon">▤</div>
+                        <h3>Tu inventario está vacío</h3>
+                        <p>
+                            Cuando existan productos registrados, aparecerán aquí.
+                        </p>
+                    </div>
+                </ng-template>
+            </div>
+        </section>
+
+        <footer class="page-footer">
+            CCL Inventory · Sistema de gestión de inventario
+        </footer>
+    </main>
+</div>
