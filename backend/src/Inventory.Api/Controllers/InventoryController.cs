@@ -82,5 +82,19 @@ namespace Inventory.Api.Controllers
 
             return Ok(movements);
         }
+
+        //Get: /api/inventory/current
+        /// <summary>
+        /// Obtiene el inventario actual disponible.
+        /// </summary>
+        /// <returns>Un resultado de acción que contiene la lista de inventario actual.</returns>
+        [HttpGet("current")]
+        public async Task<IActionResult> GetCurrentInventory()
+        {
+            var inventory = await _inventoryService.GetCurrentInventoryAsync();
+
+            return Ok(inventory);
+        }
+
     }
 }

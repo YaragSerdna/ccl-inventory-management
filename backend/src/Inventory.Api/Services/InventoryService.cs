@@ -101,5 +101,27 @@ namespace Inventory.Api.Services
 
             return await query.OrderByDescending(movement => movement.CreatedAt).ToListAsync();
         }
+
+        /// <summary>
+        /// Obtiene la lista actual de inventario desde la base de datos.
+        /// </summary>
+        /// <returns>Una tarea que representa la operación asincrónica. El valor de la tarea contiene una lista de objetos
+        /// CurrentInventoryDto.</returns>
+        public async Task<List<CurrentInventoryDto>> GetCurrentInventoryAsync()
+        {
+            return await _context.Database
+                .SqlQueryRaw<CurrentInventoryDto>(
+                    """
+                        SELECT
+                            product_id AS "ProductId",
+                            code AS "Code",
+                            name AS "Name",
+                            stock AS "Stock",
+                            unit_price AS "UnitPrice",
+                            inventory_value AS "InventoryValue"
+                        FROM public.fn_get_current_inventory()
+                        """
+                    ).ToListAsync();
+        }
     }
 }
