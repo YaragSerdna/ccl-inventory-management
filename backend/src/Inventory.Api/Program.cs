@@ -85,6 +85,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddCors(options => { options.AddPolicy("AngularFrontend", policy => { policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod(); }); });
+
 // Construir la aplicación DESPUÉS de registrar los servicios
 var app = builder.Build();
 
@@ -98,6 +100,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AngularFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
