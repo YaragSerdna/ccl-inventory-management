@@ -1,6 +1,6 @@
-
 using Inventory.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Inventory.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +18,8 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 
 builder.Services.AddDbContext<InventoryDbContext>(options => options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<InventoryService>();
 
 // Construir la aplicación DESPUÉS de registrar los servicios
 var app = builder.Build();
