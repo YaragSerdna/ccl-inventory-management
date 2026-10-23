@@ -1,0 +1,141 @@
+<section class="products-page">
+    <header class="page-header">
+        <div>
+            <a routerLink="/dashboard" class="back-link">← Volver al dashboard</a>
+            <h1>Productos</h1>
+            <p>Administra el catálogo de productos del inventario.</p>
+        </div>
+
+        <button type="button" class="btn-primary" (click)="openCreateForm()">
+            + Nuevo producto
+        </button>
+    </header>
+
+    <div class="alert alert-success" *ngIf="successMessage" role="status">
+        {{ successMessage }}
+    </div>
+
+    <div class="alert alert-error" *ngIf="errorMessage" role="alert">
+        {{ errorMessage }}
+    </div>
+
+    <section class="form-card" *ngIf="showForm">
+        <h2>{{ editingProduct ? 'Editar producto' : 'Registrar producto' }}</h2>
+
+        <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+            <div class="form-grid">
+                <label>
+                    Código *
+                    <input type="text" formControlName="code" maxlength="50" placeholder="Ej. TEC-007" />
+                    <small *ngIf="productForm.controls.code.touched &&
+                        productForm.controls.code.invalid">
+                        El código es obligatorio y admite máximo 50 caracteres.
+                    </small>
+                </label>
+
+                <label>
+                    Nombre *
+                    <input type="text" formControlName="name" maxlength="150" placeholder="Nombre del producto" />
+                    <small *ngIf="productForm.controls.name.touched &&
+                        productForm.controls.name.invalid">
+                        El nombre es obligatorio y admite máximo 150 caracteres.
+                    </small>
+                </label>
+
+                <label class="full-width">
+                    Descripción
+                    <textarea formControlName="description" maxlength="500" rows="3"
+                        placeholder="Descripción opcional"></textarea>
+                </label>
+
+                <label>
+                    Precio unitario *
+                    <input type="number" formControlName="unitPrice" min="0" step="0.01" />
+                    <small *ngIf="productForm.controls.unitPrice.touched &&
+                        productForm.controls.unitPrice.invalid">
+                        Ingresa un precio válido igual o superior a cero.
+                    </small>
+                </label>
+            </div>
+
+            <p class="form-note" *ngIf="!editingProduct">
+                El producto se registrará con stock inicial de cero. Registra una entrada
+                desde el módulo de movimientos para agregar existencias.
+            </p>
+
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" (click)="cancelForm()" [disabled]="saving">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-primary" [disabled]="saving">
+                    {{ saving ? 'Guardando...' : 'Guardar producto' }}
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="table-card">
+        <div class="table-header">
+            <div>
+                <h2>Catálogo</h2>
+                <p>{{ filteredProducts.length }} producto(s)</p>
+            </div>
+
+            <input class="search-input" type="search" placeholder="Buscar por código o nombre..."
+                aria-label="Buscar productos" [(ngModel)]="searchTerm" [ngModelOptions]="{standalone: true}" />
+        </div>
+
+        <div *ngIf="loading" class="state-message">Cargando productos...</div>
+
+        <div *ngIf="!loading && filteredProducts.length === 0" class="state-message">
+            {{ searchTerm ? 'No se encontraron productos para la búsqueda.' :
+            'No hay productos registrados.' }}
+        </div>
+
+        <div class="table-scroll" *ngIf="!loading && filteredProducts.length > 0">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Stock</th>
+                        <th>Precio unitario</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let product of filteredProducts">
+                        <td class="product-code">{{ product.code }}</td>
+                        <td>
+                            <strong>{{ product.name }}</strong>
+                            <small class="description" *ngIf="product.description">
+                                {{ product.description }}
+                            </small>
+                        </td>
+                        <td>
+                            <span class="stock-badge" [class.stock-empty]="product.stock === 0">
+                                {{ product.stock }}
+                            </span>
+                        </td>
+                        <td>{{ product.unitPrice | currency:'COP':'symbol-narrow':'1.0-2' }}</td>
+                        <td>
+                            <span class="status-badge">Activo</span>
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <button type="button" class="btn-text" (click)="openEditForm(product)">
+                                    Editar
+                                </button>
+                                <button type="button" class="btn-text danger" (click)="deactivateProduct(product)">
+                                    Desactivar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</section>
