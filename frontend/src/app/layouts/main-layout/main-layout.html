@@ -1,0 +1,50 @@
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">C</div>
+            <div>
+                <strong>CCL Inventory</strong>
+                <span>Gestión de inventario</span>
+            </div>
+        </div>
+
+        <nav class="navigation" aria-label="Navegación principal">
+            <span class="nav-section">MENÚ PRINCIPAL</span>
+
+            <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+                class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a routerLink="/products" routerLinkActive="active" class="nav-item">
+                <span class="nav-icon">📦</span>
+                <span>Productos</span>
+            </a>
+
+            <a routerLink="/movements" routerLinkActive="active" class="nav-item">
+                <span class="nav-icon">🔄</span>
+                <span>Movimientos</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span class="connection-dot"></span>
+            Sistema conectado
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <span>MiniSistema de Gestión de Inventario</span>
+
+            <button type="button" class="logout-button" (click)="logout()">
+                Cerrar sesión
+            </button>
+        </header>
+
+        <div class="page-content">
+            <router-outlet />
+        </div>
+    </main>
+</div>
