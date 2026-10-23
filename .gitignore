@@ -1,0 +1,25 @@
+
+# Angular / Node
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+
+# .NET
+**/bin/
+**/obj/
+.vs/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+
+# IDE
+.vscode/
+.idea/
+
+# Operating system
+Thumbs.db
+.DS_Store
