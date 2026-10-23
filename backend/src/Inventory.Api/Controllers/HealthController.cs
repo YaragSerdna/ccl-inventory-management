@@ -1,8 +1,10 @@
 ﻿using Inventory.Api.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class HealthController : ControllerBase

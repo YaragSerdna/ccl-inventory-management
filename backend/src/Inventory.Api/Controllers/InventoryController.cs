@@ -1,11 +1,13 @@
 ﻿using Inventory.Api.DTOs.Inventory;
 using Inventory.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
 namespace Inventory.Api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class InventoryController : ControllerBase
