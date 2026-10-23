@@ -1,0 +1,157 @@
+<section class="movements-page">
+
+    <header class="page-header">
+
+        <div>
+
+            <a routerLink="/dashboard">← Dashboard</a>
+
+            <h1>Movimientos de Inventario</h1>
+
+            <p>Registra entradas y salidas del inventario.</p>
+
+        </div>
+
+    </header>
+
+    <div class="alert success" *ngIf="successMessage">
+        {{successMessage}}
+    </div>
+
+    <div class="alert error" *ngIf="errorMessage">
+        {{errorMessage}}
+    </div>
+
+    <section class="form-card">
+
+        <h2>Registrar movimiento</h2>
+
+        <div class="movement-selector">
+
+            <button type="button" [class.active]="movementType==='ENTRY'" (click)="movementType='ENTRY'">
+
+                Entrada
+
+            </button>
+
+            <button type="button" [class.active]="movementType==='EXIT'" (click)="movementType='EXIT'">
+
+                Salida
+
+            </button>
+
+        </div>
+
+        <form [formGroup]="movementForm" (ngSubmit)="saveMovement()">
+
+            <label>
+
+                Producto
+
+                <select formControlName="productId">
+
+                    <option [value]="0">Seleccione...</option>
+
+                    <option *ngFor="let p of products" [value]="p.id">
+
+                        {{p.code}} - {{p.name}} (Stock: {{p.stock}})
+
+                    </option>
+
+                </select>
+
+            </label>
+
+            <label>
+
+                Cantidad
+
+                <input type="number" formControlName="quantity" min="1">
+
+            </label>
+
+            <label>
+
+                Observaciones
+
+                <textarea formControlName="notes" rows="3">
+
+        </textarea>
+
+            </label>
+
+            <button class="btn-primary" type="submit" [disabled]="saving">
+
+                {{saving ? 'Guardando...' : 'Registrar'}}
+
+            </button>
+
+        </form>
+
+    </section>
+
+    <section class="table-card">
+
+        <div class="table-header">
+
+            <h2>Historial</h2>
+
+            <select [(ngModel)]="selectedProductFilter" (change)="loadMovements()">
+
+                <option [value]="0">Todos</option>
+
+                <option *ngFor="let p of products" [value]="p.id">
+
+                    {{p.code}}
+
+                </option>
+
+            </select>
+
+        </div>
+
+        <div *ngIf="loading">Cargando...</div>
+
+        <table *ngIf="!loading">
+
+            <thead>
+
+                <tr>
+
+                    <th>Fecha</th>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Observación</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr *ngFor="let m of movements">
+
+                    <td>{{m.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
+
+                    <td>{{m.productCode}} - {{m.productName}}</td>
+
+                    <td>
+                        <span [class.entry]="m.movementType==='ENTRY'" [class.exit]="m.movementType==='EXIT'">
+                            {{m.movementType}}
+                        </span>
+                    </td>
+
+                    <td>{{m.quantity}}</td>
+
+                    <td>{{m.notes || '-'}}</td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+</section>
