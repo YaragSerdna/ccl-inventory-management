@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Inventory.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,8 +82,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 // Construir la aplicación DESPUÉS de registrar los servicios
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configurar el pipeline HTTP
 if (app.Environment.IsDevelopment())
